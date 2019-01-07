@@ -1,0 +1,16 @@
+{
+  "name": "rps",
+  "version": "1.0.0",
+  "description": "Rock Paper Scissors server with AI",
+  "main": "connection1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "ejs": "2.6.1",
+    "express": "4.16.4",
+    "sqlite3": "4.0.4"
+  },
+  "author": "Eric Li",
+  "license": "ISC"
+}
