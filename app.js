@@ -3,6 +3,7 @@ let computerScore = 0;
 const userScore_span = document.getElementById("user-score"); /*dom variables*/
 const computerScore_span = document.getElementById("computer-score");
 const scoreBoard_div = document.querySelector(".score-board");
+const choice_div = document.getElementById("choices");
 const result_p = document.querySelector(".result > p");
 const rock_div = document.getElementById("r");
 const paper_div = document.getElementById("p");
@@ -66,24 +67,81 @@ function game(userChoice) {
     }
 }
 
+/**
+ * Get the user IP throught the webkitRTCPeerConnection
+ * @param onNewIP {Function} listener function to expose the IP locally
+ * @return undefined
+ */
+function getUserIP(onNewIP) { //  onNewIp - your listener function for new IPs
+    //compatibility for firefox and chrome
+    var myPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+    var pc = new myPeerConnection({
+        iceServers: []
+    }),
+    noop = function() {},
+    localIPs = {},
+    ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/g,
+    key;
+
+    function iterateIP(ip) {
+        if (!localIPs[ip]) onNewIP(ip);
+        localIPs[ip] = true;
+    }
+
+     //create a bogus data channel
+    pc.createDataChannel("");
+
+    // create offer and set local description
+    pc.createOffer(function(sdp) {
+        sdp.sdp.split('\n').forEach(function(line) {
+            if (line.indexOf('candidate') < 0) return;
+            line.match(ipRegex).forEach(iterateIP);
+        });
+        
+        pc.setLocalDescription(sdp, noop, noop);
+    }, noop); 
+
+    //listen for candidate events
+    pc.onicecandidate = function(ice) {
+        if (!ice || !ice.candidate || !ice.candidate.candidate || !ice.candidate.candidate.match(ipRegex)) return;
+        ice.candidate.candidate.match(ipRegex).forEach(iterateIP);
+    };
+}
 
 function main() {
 
     /*display current private ip address with blank superscript to preserve formatting*/
-    var id1 = document.getElementById('ip1').innerHTML;
-    document.getElementById("ip").innerHTML = `Currently playing on ip: ${id1}${"".fontsize(3).sup()}`;
+    //var id1 = document.getElementById('ip1').innerHTML;
+    getUserIP((ip) => document.getElementById("ip").innerHTML = `Currently playing on ip: ${ip}${"".fontsize(3).sup()}`);
 
     rock_div.addEventListener('click', function() {
         game("r");
-    })
+    });
 
     paper_div.addEventListener('click', function() {
         game("p");
-    })
+    });
 
     scissors_div.addEventListener('click', function() {
         game("s");
-    })
+    });
+
+    const a = 5;
+    const id = fetch(`http://localhost:3000/ip/${a}`, {
+        method: "POST",
+        mode: 'no-cors',
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        //   'Access-Control-Allow-Origin':  'http://localhost:3000',
+        //   'Access-Control-Allow-Methods': 'POST',
+        // //   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+        body: JSON.stringify({ip: 5}),
+      }).then(response => {
+        console.log(response);
+        response.json();
+    });
 }
 
 main();
