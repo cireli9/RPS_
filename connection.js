@@ -16,30 +16,30 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.get("/", function(req, res) {
-  console.log("request was made: " + req.url);
-  res.render("index", { ip: req.ip });
-});
+// app.get("/", function(req, res) {
+//   console.log("request was made: " + req.url);
+//   res.render("index", { ip: req.ip });
+// });
 
-app.get("/favicon.ico", function(req, res) {
-  res.sendFile(__dirname + "/favicon_io/favicon.ico");
-});
-app.get("/styles.css", function(req, res) {
-  res.sendFile(__dirname + "/styles.css");
-});
-app.get("/app.js", function(req, res) {
-  console.log("request to app made");
-  res.sendFile(__dirname + "/app.js");
-});
-app.get("/images/rock.png", function(req, res) {
-  res.sendFile(__dirname + "/images/rock.png");
-});
-app.get("/images/scissors.png", function(req, res) {
-  res.sendFile(__dirname + "/images/scissors.png");
-});
-app.get("/images/paper.png", function(req, res) {
-  res.sendFile(__dirname + "/images/paper.png");
-});
+// app.get("/favicon.ico", function(req, res) {
+//   res.sendFile(__dirname + "/favicon_io/favicon.ico");
+// });
+// app.get("/styles.css", function(req, res) {
+//   res.sendFile(__dirname + "/styles.css");
+// });
+// app.get("/app.js", function(req, res) {
+//   console.log("request to app made");
+//   res.sendFile(__dirname + "/app.js");
+// });
+// app.get("/images/rock.png", function(req, res) {
+//   res.sendFile(__dirname + "/images/rock.png");
+// });
+// app.get("/images/scissors.png", function(req, res) {
+//   res.sendFile(__dirname + "/images/scissors.png");
+// });
+// app.get("/images/paper.png", function(req, res) {
+//   res.sendFile(__dirname + "/images/paper.png");
+// });
 
 // app.post("/ip/:foo", function(req, res) {
 //   console.log(req.params.foo);
