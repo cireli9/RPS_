@@ -3,15 +3,24 @@ let computerScore = 0;
 const userScore_span = document.getElementById("user-score"); /*dom variables*/
 const computerScore_span = document.getElementById("computer-score");
 const scoreBoard_div = document.querySelector(".score-board");
-const choice_div = document.getElementById("choices");
+const choice_div = document.querySelector(".choices");
 const result_p = document.querySelector(".result > p");
 const rock_div = document.getElementById("r");
 const paper_div = document.getElementById("p");
 const scissors_div = document.getElementById("s");
 
-function getComputerChoice() {
+function getComputerChoice(data) {
+  var val = 0;
   const choices = ["r", "p", "s"];
-  const val = Math.floor(Math.random() * 3);
+  if (data.Rock == 0 && data.Paper == 0 && data.Scissors == 0) {
+    val = Math.floor(Math.random() * 3);
+  }
+  else {
+    val = Math.floor(Math.random() * (data.Rock+data.Paper+data.Scissors));
+    if (val < data.Rock) val = 0;
+    if (val < data.Rock + data.Paper) val = 1;
+    else val = 2;
+  }
   return choices[val];
 }
 
@@ -52,8 +61,8 @@ function end(outcome, userChoice, computerChoice) {
   }
 }
 
-function game(userChoice) {
-  const computerChoice = getComputerChoice();
+function game(userChoice, data) {
+  const computerChoice = getComputerChoice(data);
   switch (userChoice + computerChoice) {
     case "rs":
     case "pr":
@@ -126,45 +135,85 @@ function getUserIP(onNewIP) {
 
 function main() {
   /*display current private ip address with blank superscript to preserve formatting*/
-  //var id1 = document.getElementById('ip1').innerHTML;
-  getUserIP(
-    ip =>
-      (document.getElementById(
-        "ip"
-      ).innerHTML = `Currently playing on ip: ${ip}${"".fontsize(3).sup()}`)
-  );
+  getUserIP( function(ip) {
+    document.getElementById("ip").innerHTML = `Currently playing on ip: ${ip}${"".fontsize(3).sup()}`;
+    document.getElementById("ip1").innerHTML = ip; //set invisible ip to be used later
+  });
 
   rock_div.addEventListener("click", function() {
-    game("r");
-  });
-
-  paper_div.addEventListener("click", function() {
-    game("p");
-  });
-
-  scissors_div.addEventListener("click", function() {
-    game("s");
-  });
-
-  const id = fetch(`http://localhost:3002/ip/`, {
+    const data = fetch(`http://localhost:3002/ip/`, {
     method: "POST",
-    // mode: 'no-cors',
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
-      //   'Access-Control-Allow-Origin':  'http://localhost:3000',
-      //   'Access-Control-Allow-Methods': 'POST',
-      // //   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     },
-    body: JSON.stringify({ ip: 5 }),
-  })
+    body: JSON.stringify({ ip: document.getElementById("ip1").innerHTML, choice: "Rock" }),
+    })
     .then(function(response) {
       return response.json();
     })
     .then(function(myJson) {
       console.log(JSON.stringify(myJson));
+      game("r", myJson);
       return JSON.stringify(myJson);
     });
+  });
+
+  paper_div.addEventListener("click", function() {
+    const data = fetch(`http://localhost:3002/ip/`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ ip: document.getElementById("ip1").innerHTML, choice: "Paper" }),
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(myJson) {
+      console.log(JSON.stringify(myJson));
+      game("p", myJson);
+      return JSON.stringify(myJson);
+    });
+  });
+
+  scissors_div.addEventListener("click", function() {
+    const data = fetch(`http://localhost:3002/ip/`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ ip: document.getElementById("ip1").innerHTML, choice: "Scissors"}),
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(myJson) {
+      console.log(JSON.stringify(myJson));
+      game("s", myJson);
+      return JSON.stringify(myJson);
+    });    
+  });
+
+  // choice_div.addEventListener("click", function() {
+  //   const id = fetch(`http://localhost:3002/ip/`, {
+  //   method: "POST",
+  //   headers: {
+  //     Accept: "application/json",
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify({ip: document.getElementById("ip1").innerHTML, choice: "Rock"})
+  //   })
+  //   .then(function(response) {
+  //     return response.json();
+  //   })
+  //   .then(function(myJson) {
+  //     console.log(JSON.stringify(myJson));
+  //     return JSON.stringify(myJson);
+  //   });
+  // })
 }
 
 main();
